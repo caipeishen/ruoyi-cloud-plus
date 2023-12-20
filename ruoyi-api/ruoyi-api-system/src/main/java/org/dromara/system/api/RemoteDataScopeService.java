@@ -17,4 +17,22 @@ public interface RemoteDataScopeService {
      */
     String getDeptAndChild(Long deptId);
 
+    /**
+     * 部门经理数据权限(上级部门以下数据权限)
+     * @param deptId
+     * @return
+     */
+    String getDeptManage(Long deptId);
+
+    /**
+     * 上级公司数据权限(上级如果非公司继续向上找)
+     * @param deptId
+     * @return
+     */
+    String getDeptCompany(Long deptId);
+
+    /**
+     * 集团部门数据权限
+     */
+    String getDeptGroup(Long deptId);
 }

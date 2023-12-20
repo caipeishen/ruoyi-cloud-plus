@@ -4,9 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.constant.UserConstants;
@@ -16,6 +14,7 @@ import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.TreeBuildUtils;
 import org.dromara.common.mybatis.helper.DataBaseHelper;
+import org.dromara.common.mybatis.query.LambdaQueryWrapperX;
 import org.dromara.common.redis.utils.CacheUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.domain.SysDept;
@@ -56,7 +55,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public List<SysDeptVo> selectDeptList(SysDeptBo dept) {
-        LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(dept);
+        LambdaQueryWrapperX<SysDept> lqw = buildQueryWrapper(dept);
         return baseMapper.selectDeptList(lqw);
     }
 
@@ -70,18 +69,18 @@ public class SysDeptServiceImpl implements ISysDeptService{
     public List<Tree<Long>> selectDeptTreeList(SysDeptBo bo) {
         // 只查询未禁用部门
         bo.setStatus(UserConstants.DEPT_NORMAL);
-        LambdaQueryWrapper<SysDept> lqw = buildQueryWrapper(bo);
+        LambdaQueryWrapperX<SysDept> lqw = buildQueryWrapper(bo);
         List<SysDeptVo> depts = baseMapper.selectDeptList(lqw);
         return buildDeptTreeSelect(depts);
     }
 
-    private LambdaQueryWrapper<SysDept> buildQueryWrapper(SysDeptBo bo) {
-        LambdaQueryWrapper<SysDept> lqw = Wrappers.lambdaQuery();
+    private LambdaQueryWrapperX<SysDept> buildQueryWrapper(SysDeptBo bo) {
+        LambdaQueryWrapperX<SysDept> lqw = new LambdaQueryWrapperX();
         lqw.eq(SysDept::getDelFlag, "0");
-        lqw.eq(ObjectUtil.isNotNull(bo.getDeptId()), SysDept::getDeptId, bo.getDeptId());
-        lqw.eq(ObjectUtil.isNotNull(bo.getParentId()), SysDept::getParentId, bo.getParentId());
-        lqw.like(StringUtils.isNotBlank(bo.getDeptName()), SysDept::getDeptName, bo.getDeptName());
-        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), SysDept::getStatus, bo.getStatus());
+        lqw.eqIfPresent(SysDept::getDeptId, bo.getDeptId());
+        lqw.eqIfPresent(SysDept::getParentId, bo.getParentId());
+        lqw.likeIfPresent(SysDept::getDeptName, bo.getDeptName());
+        lqw.eqIfPresent(SysDept::getStatus, bo.getStatus());
         lqw.orderByAsc(SysDept::getParentId);
         lqw.orderByAsc(SysDept::getOrderNum);
         lqw.orderByAsc(SysDept::getDeptId);
@@ -99,11 +98,12 @@ public class SysDeptServiceImpl implements ISysDeptService{
         if (CollUtil.isEmpty(depts)) {
             return CollUtil.newArrayList();
         }
-        return TreeBuildUtils.build(depts, (dept, tree) ->
+        return TreeBuildUtils.buildDept(depts, (dept, tree) ->
             tree.setId(dept.getDeptId())
                 .setParentId(dept.getParentId())
                 .setName(dept.getDeptName())
-                .setWeight(dept.getOrderNum()));
+                .setWeight(dept.getOrderNum())
+                .putExtra("deptType", dept.getDeptType()));
     }
 
     /**
@@ -131,7 +131,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
         if (ObjectUtil.isNull(dept)) {
             return null;
         }
-        SysDeptVo parentDept = baseMapper.selectVoOne(new LambdaQueryWrapper<SysDept>()
+        SysDeptVo parentDept = baseMapper.selectVoOne(new LambdaQueryWrapperX<SysDept>()
             .select(SysDept::getDeptName).eq(SysDept::getDeptId, dept.getParentId()));
         dept.setParentName(ObjectUtil.isNotNull(parentDept) ? parentDept.getDeptName() : null);
         return dept;
@@ -162,7 +162,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public long selectNormalChildrenDeptById(Long deptId) {
-        return baseMapper.selectCount(new LambdaQueryWrapper<SysDept>()
+        return baseMapper.selectCount(new LambdaQueryWrapperX<SysDept>()
             .eq(SysDept::getStatus, UserConstants.DEPT_NORMAL)
             .apply(DataBaseHelper.findInSet(deptId, "ancestors")));
     }
@@ -175,7 +175,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public boolean hasChildByDeptId(Long deptId) {
-        return baseMapper.exists(new LambdaQueryWrapper<SysDept>()
+        return baseMapper.exists(new LambdaQueryWrapperX<SysDept>()
             .eq(SysDept::getParentId, deptId));
     }
 
@@ -187,7 +187,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public boolean checkDeptExistUser(Long deptId) {
-        return userMapper.exists(new LambdaQueryWrapper<SysUser>()
+        return userMapper.exists(new LambdaQueryWrapperX<SysUser>()
             .eq(SysUser::getDeptId, deptId));
     }
 
@@ -199,10 +199,10 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public boolean checkDeptNameUnique(SysDeptBo dept) {
-        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysDept>()
+        boolean exist = baseMapper.exists(new LambdaQueryWrapperX<SysDept>()
             .eq(SysDept::getDeptName, dept.getDeptName())
             .eq(SysDept::getParentId, dept.getParentId())
-            .ne(ObjectUtil.isNotNull(dept.getDeptId()), SysDept::getDeptId, dept.getDeptId()));
+            .neIfPresent(SysDept::getDeptId, dept.getDeptId()));
         return !exist;
     }
 
@@ -233,6 +233,17 @@ public class SysDeptServiceImpl implements ISysDeptService{
      */
     @Override
     public int insertDept(SysDeptBo bo) {
+        // 如果是顶级公司添加
+        boolean isTopFlag = (bo.getParentId() == null) || (bo.getParentId() == 0);
+        if (isTopFlag) {
+            SysDept dept = MapstructUtils.convert(bo, SysDept.class);
+            dept.setAncestors("0");
+            int insert = baseMapper.insert(dept);// 先保存才有ID
+            dept.setDeptRoute(dept.getAncestors() + StringUtils.SEPARATOR + dept.getDeptId());
+            baseMapper.updateById(dept);
+            return insert;
+        }
+
         SysDept info = baseMapper.selectById(bo.getParentId());
         // 如果父节点不为正常状态,则不允许新增子节点
         if (!UserConstants.DEPT_NORMAL.equals(info.getStatus())) {
@@ -240,7 +251,14 @@ public class SysDeptServiceImpl implements ISysDeptService{
         }
         SysDept dept = MapstructUtils.convert(bo, SysDept.class);
         dept.setAncestors(info.getAncestors() + StringUtils.SEPARATOR + dept.getParentId());
-        return baseMapper.insert(dept);
+
+        // 先保存才有ID
+        int insert = baseMapper.insert(dept);
+
+        dept.setDeptRoute(dept.getAncestors() + StringUtils.SEPARATOR + dept.getDeptId());
+        baseMapper.updateById(dept);
+
+        return insert;
     }
 
     /**
@@ -262,6 +280,14 @@ public class SysDeptServiceImpl implements ISysDeptService{
                 String newAncestors = newParentDept.getAncestors() + StringUtils.SEPARATOR + newParentDept.getDeptId();
                 String oldAncestors = oldDept.getAncestors();
                 dept.setAncestors(newAncestors);
+                dept.setDeptRoute(newAncestors + StringUtils.SEPARATOR + dept.getDeptId());
+                updateDeptChildren(dept.getDeptId(), newAncestors, oldAncestors);
+            } else if (ObjectUtil.isNull(newParentDept) && ObjectUtil.isNotNull(oldDept)) {
+                // 修改为顶级部门
+                String newAncestors = "0";
+                String oldAncestors = oldDept.getAncestors();
+                dept.setAncestors(newAncestors);
+                dept.setDeptRoute(newAncestors + StringUtils.SEPARATOR + dept.getDeptId());
                 updateDeptChildren(dept.getDeptId(), newAncestors, oldAncestors);
             }
         }
@@ -295,13 +321,14 @@ public class SysDeptServiceImpl implements ISysDeptService{
      * @param oldAncestors 旧的父ID集合
      */
     private void updateDeptChildren(Long deptId, String newAncestors, String oldAncestors) {
-        List<SysDept> children = baseMapper.selectList(new LambdaQueryWrapper<SysDept>()
+        List<SysDept> children = baseMapper.selectList(new LambdaQueryWrapperX<SysDept>()
             .apply(DataBaseHelper.findInSet(deptId, "ancestors")));
         List<SysDept> list = new ArrayList<>();
         for (SysDept child : children) {
             SysDept dept = new SysDept();
             dept.setDeptId(child.getDeptId());
             dept.setAncestors(child.getAncestors().replaceFirst(oldAncestors, newAncestors));
+            dept.setDeptRoute(dept.getAncestors() + StringUtils.SEPARATOR + child.getDeptId());
             list.add(dept);
         }
         if (CollUtil.isNotEmpty(list)) {

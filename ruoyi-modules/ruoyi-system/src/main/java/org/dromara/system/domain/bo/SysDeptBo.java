@@ -38,6 +38,13 @@ public class SysDeptBo extends BaseEntity {
     @Size(min = 0, max = 30, message = "部门名称长度不能超过{max}个字符")
     private String deptName;
 
+
+    /**
+     * 部门类型
+     */
+    @NotNull(message = "部门类型不能为空")
+    private String deptType;
+
     /**
      * 显示顺序
      */

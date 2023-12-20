@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.constant.GenNumConstants;
 import org.dromara.common.core.constant.UserConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -19,6 +20,7 @@ import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.core.service.GenNumService;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.common.web.core.BaseController;
@@ -54,6 +56,8 @@ public class SysUserController extends BaseController {
     private final ISysPostService postService;
     private final ISysDeptService deptService;
     private final ISysTenantService tenantService;
+    private final GenNumService genNumService;
+
 
     /**
      * 获取用户列表
@@ -71,6 +75,9 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:user:export")
     @PostMapping("/export")
     public void export(SysUserBo user, HttpServletResponse response) {
+        String genNum = genNumService.genNumberByDay(GenNumConstants.TEST);
+        System.out.println("GenNumConstants.TEST: " + genNum);
+
         List<SysUserVo> list = userService.selectUserList(user);
         List<SysUserExportVo> listVo = MapstructUtils.convert(list, SysUserExportVo.class);
         ExcelUtil.exportExcel(listVo, "用户数据", SysUserExportVo.class, response);

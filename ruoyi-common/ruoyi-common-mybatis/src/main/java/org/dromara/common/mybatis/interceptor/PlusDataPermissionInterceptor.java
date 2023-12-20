@@ -98,7 +98,7 @@ public class PlusDataPermissionInterceptor extends JsqlParserSupport implements 
 
     @Override
     protected void processUpdate(Update update, int index, String sql, Object obj) {
-        Expression sqlSegment = dataPermissionHandler.getSqlSegment(update.getWhere(), (String) obj, false);
+        Expression sqlSegment = dataPermissionHandler.getSqlSegment(update.getWhere(), (String) obj, true);
         if (null != sqlSegment) {
             update.setWhere(sqlSegment);
         }
@@ -106,7 +106,7 @@ public class PlusDataPermissionInterceptor extends JsqlParserSupport implements 
 
     @Override
     protected void processDelete(Delete delete, int index, String sql, Object obj) {
-        Expression sqlSegment = dataPermissionHandler.getSqlSegment(delete.getWhere(), (String) obj, false);
+        Expression sqlSegment = dataPermissionHandler.getSqlSegment(delete.getWhere(), (String) obj, true);
         if (null != sqlSegment) {
             delete.setWhere(sqlSegment);
         }

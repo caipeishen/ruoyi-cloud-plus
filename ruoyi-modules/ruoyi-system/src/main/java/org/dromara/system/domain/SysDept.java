@@ -36,6 +36,16 @@ public class SysDept extends TenantEntity {
     private Long parentId;
 
     /**
+     * 部门路由
+     */
+    private String deptRoute;
+
+    /**
+     * 部门类型（1公司 2部门 3岗位）
+     */
+    private String deptType;
+
+    /**
      * 部门名称
      */
     private String deptName;

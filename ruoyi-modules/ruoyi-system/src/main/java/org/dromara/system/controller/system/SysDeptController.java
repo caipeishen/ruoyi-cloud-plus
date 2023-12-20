@@ -90,6 +90,8 @@ public class SysDeptController extends BaseController {
         deptService.checkDeptDataScope(deptId);
         if (!deptService.checkDeptNameUnique(dept)) {
             return R.fail("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
+        } else if (dept.getParentId() == null) {
+            // 添加功能，修改成顶级部门，没问题，不然会下方报null指针
         } else if (dept.getParentId().equals(deptId)) {
             return R.fail("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
         } else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus())) {

@@ -1,3 +1,11 @@
+DROP DATABASE IF EXISTS `ry-cloud`;
+
+CREATE DATABASE  `ry-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+USE `ry-cloud`;
 -- ----------------------------
 -- 第三方平台授权表
 -- ----------------------------
@@ -70,7 +78,7 @@ create table sys_tenant
 -- 初始化-租户表数据
 -- ----------------------------
 
-insert into sys_tenant values(1, '000000', '管理组', '15888888888', 'XXX有限公司', NULL, NULL, '多租户通用后台管理管理系统', NULL, NULL, NULL, NULL, -1, '0', '0', 103, 1, sysdate(), NULL, NULL);
+insert into sys_tenant values(1, '000000', '管理组', '15888888888', 'XXX有限公司', NULL, NULL, '多租户通用后台管理管理系统', NULL, NULL, NULL, NULL, -1, '0', '0', 11, 1, sysdate(), NULL, NULL);
 
 
 -- ----------------------------
@@ -102,8 +110,10 @@ create table sys_dept (
   dept_id           bigint(20)      not null                   comment '部门id',
   tenant_id         varchar(20)     default '000000'           comment '租户编号',
   parent_id         bigint(20)      default 0                  comment '父部门id',
+  dept_name         varchar(500)     default ''                comment '部门名称',
+  dept_type         char(1)         default null               comment '部门类型（1公司 2部门 3岗位）',
   ancestors         varchar(500)    default ''                 comment '祖级列表',
-  dept_name         varchar(30)     default ''                 comment '部门名称',
+  dept_route        varchar(500)    default ''                 comment '部门路由',
   order_num         int(4)          default 0                  comment '显示顺序',
   leader            bigint(20)      default null               comment '负责人',
   phone             varchar(11)     default null               comment '联系电话',
@@ -123,17 +133,228 @@ create table sys_dept (
 -- ----------------------------
 
 
-insert into sys_dept values(100, '000000', 0,   '0',          'XXX科技',   0, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(101, '000000', 100, '0,100',      '深圳总公司', 1, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(102, '000000', 100, '0,100',      '长沙分公司', 2, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(103, '000000', 101, '0,100,101',  '研发部门',   1, 1, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(104, '000000', 101, '0,100,101',  '市场部门',   2, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(105, '000000', 101, '0,100,101',  '测试部门',   3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(106, '000000', 101, '0,100,101',  '财务部门',   4, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(107, '000000', 101, '0,100,101',  '运维部门',   5, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(108, '000000', 102, '0,100,102',  '市场部门',   1, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
-insert into sys_dept values(109, '000000', 102, '0,100,102',  '财务部门',   2, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (1, '000000', 0, '翘运集团', 1, '0', '0,1', 10, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (2, '000000', 1, '翘运香港', 1, '0,1', '0,1,2', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (3, '000000', 19, '上海分公司', 1, '0,1,19', '0,1,19,3', 20, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (4, '000000', 3, 'IT部', 2, '0,1,19,3', '0,1,19,3,4', 30, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (5, '000000', 3, '财务部', 2, '0,1,19,3', '0,1,19,3,5', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (6, '000000', 3, '空运出口部', 2, '0,1,19,3', '0,1,19,3,6', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (7, '000000', 3, '海运出口部', 2, '0,1,19,3', '0,1,19,3,7', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (8, '000000', 3, '人事行政部', 2, '0,1,19,3', '0,1,19,3,8', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (9, '000000', 4, '软件工程师', 3, '0,1,19,3,4', '0,1,19,3,4,9', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (10, '000000', 4, '美工', 3, '0,1,19,3,4', '0,1,19,3,4,10', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (11, '000000', 4, 'IT经理', 3, '0,1,19,3,4', '0,1,19,3,4,11', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (12, '000000', 5, '财务经理', 3, '0,1,19,3,5', '0,1,19,3,5,12', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (13, '000000', 5, '会计', 3, '0,1,19,3,5', '0,1,19,3,5,13', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (14, '000000', 19, '北京分公司', 1, '0,1,19', '0,1,19,14', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (15, '000000', 19, '厦门分公司', 1, '0,1,19', '0,1,19,15', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (16, '000000', 19, '深圳分公司', 1, '0,1,19', '0,1,19,16', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (17, '000000', 166, 'Head of IT', 3, '0,1,2,166', '0,1,2,166,17', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (18, '000000', 3, '总经理', 3, '0,1,19,3', '0,1,19,3,18', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (19, '000000', 1, '翘运国际货运有限公司', 1, '0,1', '0,1,19', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (20, '000000', 3, '进口部', 2, '0,1,19,3', '0,1,19,3,20', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (21, '000000', 3, '展运部', 2, '0,1,19,3', '0,1,19,3,21', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (22, '000000', 3, '项目部', 2, '0,1,19,3', '0,1,19,3,22', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (23, '000000', 3, '物流部', 2, '0,1,19,3', '0,1,19,3,23', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (24, '000000', 8, '行政经理', 3, '0,1,19,3,8', '0,1,19,3,8,24', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (25, '000000', 19, '总经理', 3, '0,1,19', '0,1,19,25', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (26, '000000', 19, '行政法务部经理', 3, '0,1,19', '0,1,19,26', 3, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (27, '000000', 7, '中南美航线组', 2, '0,1,19,3,7', '0,1,19,3,7,27', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (28, '000000', 27, '操作', 3, '0,1,19,3,7,27', '0,1,19,3,7,27,28', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (29, '000000', 3, '采购部', 2, '0,1,19,3', '0,1,19,3,29', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (30, '000000', 3, '大客户部', 2, '0,1,19,3', '0,1,19,3,30', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (31, '000000', 19, '财务部', 2, '0,1,19', '0,1,19,31', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (32, '000000', 7, '非美线航线组', 2, '0,1,19,3,7', '0,1,19,3,7,32', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (33, '000000', 7, '北美线航线组', 2, '0,1,19,3,7', '0,1,19,3,7,33', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (34, '000000', 30, '操作', 3, '0,1,19,3,30', '0,1,19,3,30,34', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (35, '000000', 31, '财务', 3, '0,1,19,31', '0,1,19,31,35', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (36, '000000', 7, '报关', 3, '0,1,19,3,7', '0,1,19,3,7,36', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (37, '000000', 33, '客服', 3, '0,1,19,3,7,33', '0,1,19,3,7,33,37', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (38, '000000', 32, '操作', 3, '0,1,19,3,7,32', '0,1,19,3,7,32,38', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (39, '000000', 32, '客服', 3, '0,1,19,3,7,32', '0,1,19,3,7,32,39', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (40, '000000', 20, '客服', 3, '0,1,19,3,20', '0,1,19,3,20,40', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (41, '000000', 154, '客服', 3, '0,1,19,3,6,154', '0,1,19,3,6,154,41', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (42, '000000', 154, '操作', 3, '0,1,19,3,6,154', '0,1,19,3,6,154,42', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (43, '000000', 23, '客服', 3, '0,1,19,3,23', '0,1,19,3,23,43', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (44, '000000', 22, '操作', 3, '0,1,19,3,22', '0,1,19,3,22,44', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (45, '000000', 21, '经理', 3, '0,1,19,3,21', '0,1,19,3,21,45', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (46, '000000', 29, '客服', 3, '0,1,19,3,29', '0,1,19,3,29,46', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (47, '000000', 8, '前台', 3, '0,1,19,3,8', '0,1,19,3,8,47', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (48, '000000', 22, '经理', 3, '0,1,19,3,22', '0,1,19,3,22,48', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (49, '000000', 19, '成都分公司', 1, '0,1,19', '0,1,19,49', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (50, '000000', 19, '大连分公司', 1, '0,1,19', '0,1,19,50', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (51, '000000', 19, '广州分公司', 1, '0,1,19', '0,1,19,51', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (52, '000000', 19, '青岛分公司', 1, '0,1,19', '0,1,19,52', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (53, '000000', 19, '天津分公司', 1, '0,1,19', '0,1,19,53', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (54, '000000', 19, '南京分公司', 1, '0,1,19', '0,1,19,54', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (55, '000000', 19, '茂名分公司', 1, '0,1,19', '0,1,19,55', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (56, '000000', 19, '湛江分公司', 1, '0,1,19', '0,1,19,56', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (57, '000000', 56, '中石化项目', 2, '0,1,19,56', '0,1,19,56,57', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (58, '000000', 55, '中石化项目', 2, '0,1,19,55', '0,1,19,55,58', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (59, '000000', 54, '综合业务部', 2, '0,1,19,54', '0,1,19,54,59', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (60, '000000', 53, '综合业务部', 2, '0,1,19,53', '0,1,19,53,60', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (62, '000000', 52, '综合业务部', 2, '0,1,19,52', '0,1,19,52,62', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (65, '000000', 51, '综合业务部', 2, '0,1,19,51', '0,1,19,51,65', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (66, '000000', 50, '综合业务部', 2, '0,1,19,50', '0,1,19,50,66', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (69, '000000', 49, '综合业务部', 2, '0,1,19,49', '0,1,19,49,69', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (72, '000000', 15, '综合业务部', 2, '0,1,19,15', '0,1,19,15,72', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (73, '000000', 98, '客服', 3, '0,1,19,52,62,98', '0,1,19,52,62,98,73', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (74, '000000', 98, '操作', 3, '0,1,19,52,62,98', '0,1,19,52,62,98,74', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (76, '000000', 14, '空运部', 2, '0,1,19,14', '0,1,19,14,76', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (77, '000000', 76, '客服', 3, '0,1,19,14,76', '0,1,19,14,76,77', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (78, '000000', 14, '中石化项目', 2, '0,1,19,14', '0,1,19,14,78', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (79, '000000', 78, '操作', 3, '0,1,19,14,78', '0,1,19,14,78,79', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (80, '000000', 57, '项目经理', 3, '0,1,19,56,57', '0,1,19,56,57,80', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (81, '000000', 57, '项目操作', 3, '0,1,19,56,57', '0,1,19,56,57,81', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (82, '000000', 56, '总经理', 3, '0,1,19,56', '0,1,19,56,82', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (83, '000000', 55, '总经理', 3, '0,1,19,55', '0,1,19,55,83', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (84, '000000', 59, '客服', 3, '0,1,19,54,59', '0,1,19,54,59,84', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (85, '000000', 54, '总经理', 3, '0,1,19,54', '0,1,19,54,85', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (86, '000000', 33, '航线主管', 3, '0,1,19,3,7,33', '0,1,19,3,7,33,86', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (87, '000000', 31, '财务部经理', 3, '0,1,19,31', '0,1,19,31,87', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (88, '000000', 32, '航线主管', 3, '0,1,19,3,7,32', '0,1,19,3,7,32,88', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (89, '000000', 58, '项目经理', 3, '0,1,19,55,58', '0,1,19,55,58,89', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (90, '000000', 58, '项目操作', 3, '0,1,19,55,58', '0,1,19,55,58,90', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (91, '000000', 53, '总经理', 3, '0,1,19,53', '0,1,19,53,91', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (92, '000000', 53, '财务', 3, '0,1,19,53', '0,1,19,53,92', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (93, '000000', 52, '总经理', 3, '0,1,19,52', '0,1,19,52,93', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (94, '000000', 52, '财务', 3, '0,1,19,52', '0,1,19,52,94', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (95, '000000', 50, '总经理', 3, '0,1,19,50', '0,1,19,50,95', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (96, '000000', 50, '财务', 3, '0,1,19,50', '0,1,19,50,96', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (97, '000000', 66, '客服', 3, '0,1,19,50,66', '0,1,19,50,66,97', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (98, '000000', 62, '航线主管', 3, '0,1,19,52,62', '0,1,19,52,62,98', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (99, '000000', 62, '客服主管', 3, '0,1,19,52,62', '0,1,19,52,62,99', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (100, '000000', 99, '客服', 3, '0,1,19,52,62,99', '0,1,19,52,62,99,100', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (101, '000000', 99, '操作', 3, '0,1,19,52,62,99', '0,1,19,52,62,99,101', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (102, '000000', 69, '操作', 3, '0,1,19,49,69', '0,1,19,49,69,102', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (103, '000000', 30, '大客户经理', 3, '0,1,19,3,30', '0,1,19,3,30,103', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (104, '000000', 19, '宁波分公司', 1, '0,1,19', '0,1,19,104', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (106, '000000', 104, '综合业务部', 2, '0,1,19,104', '0,1,19,104,106', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (107, '000000', 104, '总经理', 3, '0,1,19,104', '0,1,19,104,107', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (108, '000000', 104, '财务', 3, '0,1,19,104', '0,1,19,104,108', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (109, '000000', 106, '客服', 3, '0,1,19,104,106', '0,1,19,104,106,109', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (110, '000000', 106, '操作', 3, '0,1,19,104,106', '0,1,19,104,106,110', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (111, '000000', 106, '文件', 3, '0,1,19,104,106', '0,1,19,104,106,111', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (113, '000000', 49, '总经理', 3, '0,1,19,49', '0,1,19,49,113', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (114, '000000', 76, '主管', 3, '0,1,19,14,76', '0,1,19,14,76,114', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (115, '000000', 60, '操作经理', 3, '0,1,19,53,60', '0,1,19,53,60,115', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (116, '000000', 60, '操作', 3, '0,1,19,53,60', '0,1,19,53,60,116', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (117, '000000', 60, '客服', 3, '0,1,19,53,60', '0,1,19,53,60,117', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (118, '000000', 5, '开票', 3, '0,1,19,3,5', '0,1,19,3,5,118', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (119, '000000', 8, '网管', 3, '0,1,19,3,8', '0,1,19,3,8,119', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (120, '000000', 8, '审单', 3, '0,1,19,3,8', '0,1,19,3,8,120', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (122, '000000', 16, '综合业务部', 2, '0,1,19,16', '0,1,19,16,122', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (123, '000000', 16, '总经理', 3, '0,1,19,16', '0,1,19,16,123', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (124, '000000', 15, '总经理', 3, '0,1,19,15', '0,1,19,15,124', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (125, '000000', 15, '财务', 3, '0,1,19,15', '0,1,19,15,125', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (126, '000000', 72, '客服', 3, '0,1,19,15,72', '0,1,19,15,72,126', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (127, '000000', 72, '客服主管', 3, '0,1,19,15,72', '0,1,19,15,72,127', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (128, '000000', 72, '操作', 3, '0,1,19,15,72', '0,1,19,15,72,128', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (129, '000000', 72, '操作主管', 3, '0,1,19,15,72', '0,1,19,15,72,129', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (130, '000000', 49, '财务', 3, '0,1,19,49', '0,1,19,49,130', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (131, '000000', 16, '财务经理', 3, '0,1,19,16', '0,1,19,16,131', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (132, '000000', 131, '财务', 3, '0,1,19,16,131', '0,1,19,16,131,132', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (133, '000000', 122, '操作经理', 3, '0,1,19,16,122', '0,1,19,16,122,133', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (134, '000000', 122, '操作', 3, '0,1,19,16,122', '0,1,19,16,122,134', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (135, '000000', 122, '文件', 3, '0,1,19,16,122', '0,1,19,16,122,135', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (137, '000000', 78, '主管', 3, '0,1,19,14,78', '0,1,19,14,78,137', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (138, '000000', 65, '部门经理', 3, '0,1,19,51,65', '0,1,19,51,65,138', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (139, '000000', 65, '操作', 3, '0,1,19,51,65', '0,1,19,51,65,139', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (140, '000000', 65, '文件', 3, '0,1,19,51,65', '0,1,19,51,65,140', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (141, '000000', 51, '财务主管', 3, '0,1,19,51', '0,1,19,51,141', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (142, '000000', 141, '出纳', 3, '0,1,19,51,141', '0,1,19,51,141,142', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (143, '000000', 51, '总经理', 3, '0,1,19,51', '0,1,19,51,143', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (144, '000000', 14, '总经理', 3, '0,1,19,14', '0,1,19,14,144', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (145, '000000', 14, '财务', 3, '0,1,19,14', '0,1,19,14,145', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (146, '000000', 69, '操作经理', 3, '0,1,19,49,69', '0,1,19,49,69,146', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (147, '000000', 69, '销售', 3, '0,1,19,49,69', '0,1,19,49,69,147', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (148, '000000', 19, '副总经理', 3, '0,1,19', '0,1,19,148', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (149, '000000', 27, '客服', 3, '0,1,19,3,7,27', '0,1,19,3,7,27,149', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (150, '000000', 27, 'Team Leader', 3, '0,1,19,3,7,27', '0,1,19,3,7,27,150', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (151, '000000', 7, '海运经理', 3, '0,1,19,3,7', '0,1,19,3,7,151', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (152, '000000', 29, '采购经理', 3, '0,1,19,3,29', '0,1,19,3,29,152', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (153, '000000', 20, '进口经理', 3, '0,1,19,3,20', '0,1,19,3,20,153', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (154, '000000', 6, '空运经理', 3, '0,1,19,3,6', '0,1,19,3,6,154', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (155, '000000', 5, '出纳', 3, '0,1,19,3,5', '0,1,19,3,5,155', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (156, '000000', 23, '物流经理', 3, '0,1,19,3,23', '0,1,19,3,23,156', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (157, '000000', 23, '跑单', 3, '0,1,19,3,23', '0,1,19,3,23,157', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (158, '000000', 19, '副总经理', 1, '0,1,19', '0,1,19,158', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (159, '000000', 59, '客服主管', 3, '0,1,19,54,59', '0,1,19,54,59,159', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (160, '000000', 2, 'Sales', 2, '0,1,2', '0,1,2,160', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (161, '000000', 2, 'Seafreight', 2, '0,1,2', '0,1,2,161', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (162, '000000', 2, 'Airfreight', 2, '0,1,2', '0,1,2,162', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (163, '000000', 2, 'Commercial', 2, '0,1,2', '0,1,2,163', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (164, '000000', 185, 'Team Manager', 2, '0,1,2,185', '0,1,2,185,164', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (165, '000000', 2, 'Finance', 2, '0,1,2', '0,1,2,165', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (166, '000000', 2, 'IT', 2, '0,1,2', '0,1,2,166', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (167, '000000', 2, 'Exhibition', 2, '0,1,2', '0,1,2,167', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (168, '000000', 2, 'Rail', 2, '0,1,2', '0,1,2,168', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (169, '000000', 166, 'Head of IT', 2, '0,1,2,166', '0,1,2,166,169', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (170, '000000', 2, 'Sourcing', 2, '0,1,2', '0,1,2,170', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (171, '000000', 2, 'Administration', 2, '0,1,2', '0,1,2,171', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (172, '000000', 206, 'Sales Manager', 3, '0,1,2,160,206', '0,1,2,160,206,172', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (173, '000000', 206, 'Business Development Manager', 3, '0,1,2,160,206', '0,1,2,160,206,173', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (174, '000000', 180, 'Seafrt Customer Service Officer', 3, '0,1,2,161,180', '0,1,2,161,180,174', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (175, '000000', 180, '3PL Co-ordinator', 3, '0,1,2,161,180', '0,1,2,161,180,175', 8, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (176, '000000', 180, 'Seafrt Document', 3, '0,1,2,161,180', '0,1,2,161,180,176', 5, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (177, '000000', 180, 'Seafrt Supervisor', 3, '0,1,2,161,180', '0,1,2,161,180,177', 3, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (178, '000000', 180, 'Seafrt Operations', 3, '0,1,2,161,180', '0,1,2,161,180,178', 4, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (179, '000000', 161, 'Transportation', 3, '0,1,2,161', '0,1,2,161,179', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (180, '000000', 161, 'Operation Director', 3, '0,1,2,161', '0,1,2,161,180', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (181, '000000', 168, 'Business Development Manager', 3, '0,1,2,168', '0,1,2,168,181', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (182, '000000', 171, 'Officer', 3, '0,1,2,171', '0,1,2,171,182', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (183, '000000', 17, 'Support Officer', 3, '0,1,2,166,17', '0,1,2,166,17,183', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (184, '000000', 180, 'Assistant Seafrt Manager', 3, '0,1,2,161,180', '0,1,2,161,180,184', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (185, '000000', 2, 'Project', 2, '0,1,2', '0,1,2,185', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (186, '000000', 185, 'Team ManagerT', 3, '0,1,2,185', '0,1,2,185,186', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (187, '000000', 186, 'Senior Project Executive', 3, '0,1,2,185,186', '0,1,2,185,186,187', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (188, '000000', 186, 'Co-ordinator', 3, '0,1,2,185,186', '0,1,2,185,186,188', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (189, '000000', 170, 'Marketing Manager', 3, '0,1,2,170', '0,1,2,170,189', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (190, '000000', 196, 'Senior Manager', 3, '0,1,2,163,196', '0,1,2,163,196,190', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (191, '000000', 190, 'Trade Executive', 3, '0,1,2,163,196,190', '0,1,2,163,196,190,191', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (192, '000000', 196, 'Trade Development Manager', 3, '0,1,2,163,196', '0,1,2,163,196,192', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (193, '000000', 196, 'Marine Commercial Manager', 3, '0,1,2,163,196', '0,1,2,163,196,193', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (194, '000000', 163, 'Transportation', 3, '0,1,2,163', '0,1,2,163,194', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (195, '000000', 192, 'Assistant Trade Manager', 3, '0,1,2,163,196,192', '0,1,2,163,196,192,195', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (196, '000000', 163, 'Trade Director', 3, '0,1,2,163', '0,1,2,163,196', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (197, '000000', 2, 'Managing Director', 3, '0,1,2', '0,1,2,197', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (198, '000000', 199, 'Account Clerk', 3, '0,1,2,165,199', '0,1,2,165,199,198', 4, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (199, '000000', 165, 'Financial Controller', 3, '0,1,2,165', '0,1,2,165,199', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (200, '000000', 199, 'Finance Manager', 3, '0,1,2,165,199', '0,1,2,165,199,200', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (201, '000000', 199, 'Senior Account Clerk-Payable', 3, '0,1,2,165,199', '0,1,2,165,199,201', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (202, '000000', 199, 'Accountant', 3, '0,1,2,165,199', '0,1,2,165,199,202', 3, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (203, '000000', 199, 'Account Clerk-Payable', 3, '0,1,2,165,199', '0,1,2,165,199,203', 5, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (204, '000000', 167, 'Exhibition Senior Manager', 3, '0,1,2,167', '0,1,2,167,204', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (205, '000000', 162, 'Airfreight Director', 3, '0,1,2,162', '0,1,2,162,205', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (206, '000000', 160, 'Sales Director', 3, '0,1,2,160', '0,1,2,160,206', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (207, '000000', 160, 'Sales Director', 3, '0,1,2,160', '0,1,2,160,207', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (208, '000000', 205, 'Airfreight Operations Manager', 3, '0,1,2,162,205', '0,1,2,162,205,208', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (209, '000000', 208, 'Operations Supervisor', 3, '0,1,2,162,205,208', '0,1,2,162,205,208,209', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (210, '000000', 208, 'Operations', 3, '0,1,2,162,205,208', '0,1,2,162,205,208,210', 3, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (211, '000000', 208, 'Senior Operations', 3, '0,1,2,162,205,208', '0,1,2,162,205,208,211', 2, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (212, '000000', 205, 'Airfreight Manager', 3, '0,1,2,162,205', '0,1,2,162,205,212', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (213, '000000', 180, 'Import Operations', 3, '0,1,2,161,180', '0,1,2,161,180,213', 7, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (214, '000000', 180, 'Seafrt Import', 3, '0,1,2,161,180', '0,1,2,161,180,214', 6, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (215, '000000', 148, '培训', 3, '0,1,19,148', '0,1,19,148,215', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (216, '000000', 208, 'Import Operations', 3, '0,1,2,162,205,208', '0,1,2,162,205,208,216', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (217, '000000', 151, '助理', 3, '0,1,19,3,7,151', '0,1,19,3,7,151,217', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (218, '000000', 4, '测试', 3, '0,1,19,3,4', '0,1,19,3,4,218', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (219, '000000', 1, 'Kintech', 1, '0,1', '0,1,219', 1, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (220, '000000', 219, 'General Manager', 3, '0,1,219', '0,1,219,220', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (221, '000000', 220, '海运操作', 3, '0,1,219,220', '0,1,219,220,221', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
+INSERT INTO `sys_dept` (`dept_id`, `tenant_id`, `parent_id`, `dept_name`, `dept_type`, `ancestors`, `dept_route`, `order_num`, `leader`, `phone`, `email`, `status`, `create_dept`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (222, '000000', 166, '测试', 3, '0,1,2,166', '0,1,2,166,222', NULL, NULL, NULL, NULL, 0, NULL, 1, sysdate(), 1, sysdate());
 
+-- 测试部门数据
+insert into sys_dept values(1001, '000000', 0,'XXX科技',   1,   '0',         '0,1001',          1, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1011, '000000', 1001,'深圳总公司', 1, '0,1001',     '0,1001,1011',      2, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1021, '000000', 1001,'长沙分公司', 1, '0,1001',     '0,1001,1021',      2, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1031, '000000', 1011,'研发部门',   2, '0,1001,1011', '0,1001,1021,1031',  3, 1, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1041, '000000', 1011,'市场部门',   2, '0,1001,1011', '0,1001,1011,1041',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1051, '000000', 1011,'测试部门',   2, '0,1001,1011', '0,1001,1011,1051',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1061, '000000', 1011,'财务部门',   2, '0,1001,1011', '0,1001,1011,1061',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1071, '000000', 1011,'运维部门',   2, '0,1001,1011', '0,1001,1011,1071',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1081, '000000', 1021,'市场部门',   2, '0,1001,1021', '0,1001,1021,1081',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
+insert into sys_dept values(1091, '000000', 1021,'财务部门',   2, '0,1001,1021', '0,1001,1021,1091',  3, null, '15888888888', 'xxx@qq.com', '0', '0', 103, 1, sysdate(), null, null);
 
 -- ----------------------------
 -- 2、用户信息表
@@ -167,8 +388,13 @@ create table sys_user (
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into sys_user values(1, '000000', 103, 'admin', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@163.com', '15888888888', '1', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 103, 1, sysdate(), null, null, '管理员');
-insert into sys_user values(2, '000000', 105, 'lionli', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@qq.com',  '15666666666', '1', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 103, 1, sysdate(), null, null, '测试员');
+INSERT INTO `sys_user` VALUES (1, '000000', 4, 'admin', '疯狂的狮子Li', 'sys_user', 'crazyLionLi@163.com', '15888888888', '1', NULL, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '0:0:0:0:0:0:0:1', sysdate(), 103, 1, sysdate(), 1, sysdate(), '管理员');
+INSERT INTO `sys_user` VALUES (2, '000000', 4, 'lionli', '疯狂的狮子Li', 'sys_user', '', '', '1', NULL, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 103, 1, sysdate(), 1734866402629763073, sysdate(), '测试员');
+INSERT INTO `sys_user` VALUES (3, '000000', 25, 'test01', 'test01', 'sys_user', '', '', '0', NULL, '$2a$10$NKKY5hZtAeYyBjA63G/Kw.E0PQZdmIWtR4VgKvJF6bIhEiy1CHcbu', '0', '0', '0:0:0:0:0:0:0:1', sysdate(), 103, 1, sysdate(), 1734866269674520578, sysdate(), '');
+INSERT INTO `sys_user` VALUES (4, '000000', 18, 'test02', 'test02', 'sys_user', '', '', '0', NULL, '$2a$10$jzOF/SxWQwdCpDwjyHZ4buHZkI7cDHUSMHgQHjmfSMD240cjpMnNe', '0', '0', '0:0:0:0:0:0:0:1', sysdate(), 103, 1, sysdate(), 1734866338423357442, sysdate(), '');
+INSERT INTO `sys_user` VALUES (5, '000000', 11, 'test03', 'test03', 'sys_user', '', '', '0', NULL, '$2a$10$H97YYtjaraOMIdIQOX6Ar.ApcXLGoaQSvSjTAyETkJ1IXfhsKe9KC', '0', '0', '0:0:0:0:0:0:0:1', sysdate(), 103, 1, sysdate(), 1, sysdate(), '');
+INSERT INTO `sys_user` VALUES (6, '000000', 9, 'test04', 'test04', 'sys_user', '', '', '0', NULL, '$2a$10$WL5jCDXk1ppcgywWwXlEFuuNHR7nbPPjDOCVICrfsx0qDMhdIO2H6', '0', '0', '', NULL, 103, 1, sysdate(), 1734866338423357442, sysdate(), '');
+INSERT INTO `sys_user` VALUES (7, '000000', 9, 'test05', 'test05', 'sys_user', '', '', '0', NULL, '$2a$10$rCrFe4.u2UBku4TsV2INBOeog9YAb0MQ7hr7jpzi2jJBmcvybk6.O', '0', '0', '0:0:0:0:0:0:0:1', sysdate(), 103, 1, sysdate(), 1, sysdate(), '');
 
 
 -- ----------------------------
@@ -195,10 +421,10 @@ create table sys_post
 -- ----------------------------
 -- 初始化-岗位信息表数据
 -- ----------------------------
-insert into sys_post values(1, '000000', 'ceo',  '董事长',    1, '0', 103, 1, sysdate(), null, null, '');
-insert into sys_post values(2, '000000', 'se',   '项目经理',  2, '0', 103, 1, sysdate(), null, null, '');
-insert into sys_post values(3, '000000', 'hr',   '人力资源',  3, '0', 103, 1, sysdate(), null, null, '');
-insert into sys_post values(4, '000000', 'user', '普通员工',  4, '0', 103, 1, sysdate(), null, null, '');
+insert into sys_post values(1, '000000', 'ceo',  '董事长',    1, '0', 11, 1, sysdate(), null, null, '');
+insert into sys_post values(2, '000000', 'se',   '项目经理',  2, '0', 11, 1, sysdate(), null, null, '');
+insert into sys_post values(3, '000000', 'hr',   '人力资源',  3, '0', 11, 1, sysdate(), null, null, '');
+insert into sys_post values(4, '000000', 'user', '普通员工',  4, '0', 11, 1, sysdate(), null, null, '');
 
 
 -- ----------------------------
@@ -211,7 +437,7 @@ create table sys_role (
   role_name            varchar(30)     not null                   comment '角色名称',
   role_key             varchar(100)    not null                   comment '角色权限字符串',
   role_sort            int(4)          not null                   comment '显示顺序',
-  data_scope           char(1)         default '1'                comment '数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）',
+  data_scope           char(1)         default '1'                comment '数据范围（1：全部数据权限 2：自定数据权限 3：集团部门数据权限 4：上级公司数据权限 5:部门经理数据权限 6:仅本人数据权限）',
   menu_check_strictly  tinyint(1)      default 1                  comment '菜单树选择项是否关联显示',
   dept_check_strictly  tinyint(1)      default 1                  comment '部门树选择项是否关联显示',
   status               char(1)         not null                   comment '角色状态（0正常 1停用）',
@@ -228,8 +454,12 @@ create table sys_role (
 -- ----------------------------
 -- 初始化-角色信息表数据
 -- ----------------------------
-insert into sys_role values(1, '000000', '超级管理员',  'superadmin',  1, 1, 1, 1, '0', '0', 103, 1, sysdate(), null, null, '超级管理员');
-insert into sys_role values(2, '000000', '普通角色',    'common', 2, 2, 1, 1, '0', '0', 103, 1, sysdate(), null, null, '普通角色');
+insert into sys_role values(1, '000000', '超级管理员', 'superadmin', 1, '1', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '超级管理员');
+insert into sys_role values(2, '000000', '管理员', 'admin', 2, '1', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '管理员');
+insert into sys_role values(3, '000000', '集团代表', 'group', 3, '3', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '集团代表');
+insert into sys_role values(4, '000000', '公司代表', 'company', 4, '4', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '公司代表');
+insert into sys_role values(5, '000000', '部门经理', 'manage', 5, '5', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '部门经理');
+insert into sys_role values(6, '000000', '普通角色', 'operate', 6, '6', 1, 1, '0', '0', 11, 1, sysdate(), NULL, NULL, '普通角色');
 
 
 -- ----------------------------
@@ -264,128 +494,128 @@ create table sys_menu (
 -- 初始化-菜单信息表数据
 -- ----------------------------
 -- 一级菜单
-insert into sys_menu values('1', '系统管理', '0', '1', 'system',           null, '', 1, 0, 'M', '0', '0', '', 'system',   103, 1, sysdate(), null, null, '系统管理目录');
-insert into sys_menu values('6', '租户管理', '0', '2', 'tenant',           null, '', 1, 0, 'M', '0', '0', '', 'chart',    103, 1, sysdate(), null, null, '租户管理目录');
-insert into sys_menu values('2', '系统监控', '0', '3', 'monitor',          null, '', 1, 0, 'M', '0', '0', '', 'monitor',  103, 1, sysdate(), null, null, '系统监控目录');
-insert into sys_menu values('3', '系统工具', '0', '4', 'tool',             null, '', 1, 0, 'M', '0', '0', '', 'tool',     103, 1, sysdate(), null, null, '系统工具目录');
-insert into sys_menu values('4', 'PLUS官网', '0', '5', 'https://gitee.com/dromara/RuoYi-Cloud-Plus', null, '', 0, 0, 'M', '0', '0', '', 'guide',    103, 1, sysdate(), null, null, 'RuoYi-Cloud-Plus官网地址');
+insert into sys_menu values('1', '系统管理', '0', '1', 'system',           null, '', 1, 0, 'M', '0', '0', '', 'system',   11, 1, sysdate(), null, null, '系统管理目录');
+insert into sys_menu values('6', '租户管理', '0', '2', 'tenant',           null, '', 1, 0, 'M', '0', '0', '', 'chart',    11, 1, sysdate(), null, null, '租户管理目录');
+insert into sys_menu values('2', '系统监控', '0', '3', 'monitor',          null, '', 1, 0, 'M', '0', '0', '', 'monitor',  11, 1, sysdate(), null, null, '系统监控目录');
+insert into sys_menu values('3', '系统工具', '0', '4', 'tool',             null, '', 1, 0, 'M', '0', '0', '', 'tool',     11, 1, sysdate(), null, null, '系统工具目录');
+insert into sys_menu values('4', 'PLUS官网', '0', '5', 'https://gitee.com/dromara/RuoYi-Cloud-Plus', null, '', 0, 0, 'M', '0', '0', '', 'guide',    11, 1, sysdate(), null, null, 'RuoYi-Cloud-Plus官网地址');
 -- 二级菜单
-insert into sys_menu values('100',  '用户管理',     '1',   '1', 'user',             'system/user/index',            '', 1, 0, 'C', '0', '0', 'system:user:list',            'user',          103, 1, sysdate(), null, null, '用户管理菜单');
-insert into sys_menu values('101',  '角色管理',     '1',   '2', 'role',             'system/role/index',            '', 1, 0, 'C', '0', '0', 'system:role:list',            'peoples',       103, 1, sysdate(), null, null, '角色管理菜单');
-insert into sys_menu values('102',  '菜单管理',     '1',   '3', 'menu',             'system/menu/index',            '', 1, 0, 'C', '0', '0', 'system:menu:list',            'tree-table',    103, 1, sysdate(), null, null, '菜单管理菜单');
-insert into sys_menu values('103',  '部门管理',     '1',   '4', 'dept',             'system/dept/index',            '', 1, 0, 'C', '0', '0', 'system:dept:list',            'tree',          103, 1, sysdate(), null, null, '部门管理菜单');
-insert into sys_menu values('104',  '岗位管理',     '1',   '5', 'post',             'system/post/index',            '', 1, 0, 'C', '0', '0', 'system:post:list',            'post',          103, 1, sysdate(), null, null, '岗位管理菜单');
-insert into sys_menu values('105',  '字典管理',     '1',   '6', 'dict',             'system/dict/index',            '', 1, 0, 'C', '0', '0', 'system:dict:list',            'dict',          103, 1, sysdate(), null, null, '字典管理菜单');
-insert into sys_menu values('106',  '参数设置',     '1',   '7', 'config',           'system/config/index',          '', 1, 0, 'C', '0', '0', 'system:config:list',          'edit',          103, 1, sysdate(), null, null, '参数设置菜单');
-insert into sys_menu values('107',  '通知公告',     '1',   '8', 'notice',           'system/notice/index',          '', 1, 0, 'C', '0', '0', 'system:notice:list',          'message',       103, 1, sysdate(), null, null, '通知公告菜单');
-insert into sys_menu values('108',  '日志管理',     '1',   '9', 'log',              '',                             '', 1, 0, 'M', '0', '0', '',                            'log',           103, 1, sysdate(), null, null, '日志管理菜单');
-insert into sys_menu values('109',  '在线用户',     '2',   '1', 'online',           'monitor/online/index',         '', 1, 0, 'C', '0', '0', 'monitor:online:list',         'online',        103, 1, sysdate(), null, null, '在线用户菜单');
-insert into sys_menu values('110',  'PowerJob控制台', '2', '2', 'http://localhost:7700',        '',                '', 0, 0, 'C', '0', '0', 'monitor:job:list',             'job',           103, 1, sysdate(), null, null, '定时任务菜单');
-insert into sys_menu values('111',  'Sentinel控制台','2',  '3', 'http://localhost:8718',        '',                '', 0, 0, 'C', '0', '0', 'monitor:sentinel:list',        'sentinel',      103, 1, sysdate(), null, null, '流量控制菜单');
-insert into sys_menu values('112',  'Nacos控制台',  '2',   '4', 'http://localhost:8848/nacos',  '',                '', 0, 0, 'C', '0', '0', 'monitor:nacos:list',           'nacos',         103, 1, sysdate(), null, null, '服务治理菜单');
-insert into sys_menu values('113',  'Admin控制台',  '2',   '5', 'http://localhost:9100/login',  '',                '', 0, 0, 'C', '0', '0', 'monitor:server:list',          'server',        103, 1, sysdate(), null, null, '服务监控菜单');
-insert into sys_menu values('114',  '表单构建',     '3',   '1', 'build',            'tool/build/index',             '', 1, 0, 'C', '0', '0', 'tool:build:list',             'build',         103, 1, sysdate(), null, null, '表单构建菜单');
-insert into sys_menu values('115',  '代码生成',     '3',   '2', 'gen',              'tool/gen/index',               '', 1, 0, 'C', '0', '0', 'tool:gen:list',               'code',          103, 1, sysdate(), null, null, '代码生成菜单');
-insert into sys_menu values('121', '租户管理',      '6',   '1', 'tenant',           'system/tenant/index',          '', 1, 0, 'C', '0', '0', 'system:tenant:list',          'list',          103, 1, sysdate(), null, null, '租户管理菜单');
-insert into sys_menu values('122', '租户套餐管理',  '6',   '2', 'tenantPackage',    'system/tenantPackage/index',   '', 1, 0, 'C', '0', '0', 'system:tenantPackage:list',   'form',          103, 1, sysdate(), null, null, '租户套餐管理菜单');
-insert into sys_menu values('123',  '客户端管理',   '1',   '11', 'client',           'system/client/index',         '', 1, 0, 'C', '0', '0', 'system:client:list',          'international', 103, 1, sysdate(), null, null, '客户端管理菜单');
+insert into sys_menu values('100',  '用户管理',     '1',   '1', 'user',             'system/user/index',            '', 1, 0, 'C', '0', '0', 'system:user:list',            'user',          11, 1, sysdate(), null, null, '用户管理菜单');
+insert into sys_menu values('101',  '角色管理',     '1',   '2', 'role',             'system/role/index',            '', 1, 0, 'C', '0', '0', 'system:role:list',            'peoples',       11, 1, sysdate(), null, null, '角色管理菜单');
+insert into sys_menu values('102',  '菜单管理',     '1',   '3', 'menu',             'system/menu/index',            '', 1, 0, 'C', '0', '0', 'system:menu:list',            'tree-table',    11, 1, sysdate(), null, null, '菜单管理菜单');
+insert into sys_menu values('103',  '部门管理',     '1',   '4', 'dept',             'system/dept/index',            '', 1, 0, 'C', '0', '0', 'system:dept:list',            'tree',          11, 1, sysdate(), null, null, '部门管理菜单');
+insert into sys_menu values('104',  '岗位管理',     '1',   '5', 'post',             'system/post/index',            '', 1, 0, 'C', '0', '0', 'system:post:list',            'post',          11, 1, sysdate(), null, null, '岗位管理菜单');
+insert into sys_menu values('105',  '字典管理',     '1',   '6', 'dict',             'system/dict/index',            '', 1, 0, 'C', '0', '0', 'system:dict:list',            'dict',          11, 1, sysdate(), null, null, '字典管理菜单');
+insert into sys_menu values('106',  '参数设置',     '1',   '7', 'config',           'system/config/index',          '', 1, 0, 'C', '0', '0', 'system:config:list',          'edit',          11, 1, sysdate(), null, null, '参数设置菜单');
+insert into sys_menu values('107',  '通知公告',     '1',   '8', 'notice',           'system/notice/index',          '', 1, 0, 'C', '0', '0', 'system:notice:list',          'message',       11, 1, sysdate(), null, null, '通知公告菜单');
+insert into sys_menu values('108',  '日志管理',     '1',   '9', 'log',              '',                             '', 1, 0, 'M', '0', '0', '',                            'log',           11, 1, sysdate(), null, null, '日志管理菜单');
+insert into sys_menu values('109',  '在线用户',     '2',   '1', 'online',           'monitor/online/index',         '', 1, 0, 'C', '0', '0', 'monitor:online:list',         'online',        11, 1, sysdate(), null, null, '在线用户菜单');
+insert into sys_menu values('110',  'PowerJob控制台', '2', '2', 'http://localhost:7700',        '',                '', 0, 0, 'C', '0', '0', 'monitor:job:list',             'job',           11, 1, sysdate(), null, null, '定时任务菜单');
+insert into sys_menu values('111',  'Sentinel控制台','2',  '3', 'http://localhost:8718',        '',                '', 0, 0, 'C', '0', '0', 'monitor:sentinel:list',        'sentinel',      11, 1, sysdate(), null, null, '流量控制菜单');
+insert into sys_menu values('112',  'Nacos控制台',  '2',   '4', 'http://localhost:8848/nacos',  '',                '', 0, 0, 'C', '0', '0', 'monitor:nacos:list',           'nacos',         11, 1, sysdate(), null, null, '服务治理菜单');
+insert into sys_menu values('113',  'Admin控制台',  '2',   '5', 'http://localhost:9100/login',  '',                '', 0, 0, 'C', '0', '0', 'monitor:server:list',          'server',        11, 1, sysdate(), null, null, '服务监控菜单');
+insert into sys_menu values('114',  '表单构建',     '3',   '1', 'build',            'tool/build/index',             '', 1, 0, 'C', '0', '0', 'tool:build:list',             'build',         11, 1, sysdate(), null, null, '表单构建菜单');
+insert into sys_menu values('115',  '代码生成',     '3',   '2', 'gen',              'tool/gen/index',               '', 1, 0, 'C', '0', '0', 'tool:gen:list',               'code',          11, 1, sysdate(), null, null, '代码生成菜单');
+insert into sys_menu values('121', '租户管理',      '6',   '1', 'tenant',           'system/tenant/index',          '', 1, 0, 'C', '0', '0', 'system:tenant:list',          'list',          11, 1, sysdate(), null, null, '租户管理菜单');
+insert into sys_menu values('122', '租户套餐管理',  '6',   '2', 'tenantPackage',    'system/tenantPackage/index',   '', 1, 0, 'C', '0', '0', 'system:tenantPackage:list',   'form',          11, 1, sysdate(), null, null, '租户套餐管理菜单');
+insert into sys_menu values('123',  '客户端管理',   '1',   '11', 'client',           'system/client/index',         '', 1, 0, 'C', '0', '0', 'system:client:list',          'international', 11, 1, sysdate(), null, null, '客户端管理菜单');
 -- oss菜单
-insert into sys_menu values('118',  '文件管理',     '1',   '10', 'oss',              'system/oss/index',            '', 1, 0, 'C', '0', '0', 'system:oss:list',              'upload',        103, 1, sysdate(), null, null, '文件管理菜单');
+insert into sys_menu values('118',  '文件管理',     '1',   '10', 'oss',              'system/oss/index',            '', 1, 0, 'C', '0', '0', 'system:oss:list',              'upload',        11, 1, sysdate(), null, null, '文件管理菜单');
 -- 三级菜单
-insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          103, 1, sysdate(), null, null, '操作日志菜单');
-insert into sys_menu values('501',  '登录日志', '108', '2', 'logininfor', 'monitor/logininfor/index', '', 1, 0, 'C', '0', '0', 'monitor:logininfor:list', 'logininfor',    103, 1, sysdate(), null, null, '登录日志菜单');
+insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          11, 1, sysdate(), null, null, '操作日志菜单');
+insert into sys_menu values('501',  '登录日志', '108', '2', 'logininfor', 'monitor/logininfor/index', '', 1, 0, 'C', '0', '0', 'monitor:logininfor:list', 'logininfor',    11, 1, sysdate(), null, null, '登录日志菜单');
 -- 用户管理按钮
-insert into sys_menu values('1001', '用户查询', '100', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1002', '用户新增', '100', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1003', '用户修改', '100', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1004', '用户删除', '100', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:remove',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1005', '用户导出', '100', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:export',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1006', '用户导入', '100', '6',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:import',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1007', '重置密码', '100', '7',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:resetPwd',       '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1001', '用户查询', '100', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1002', '用户新增', '100', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1003', '用户修改', '100', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1004', '用户删除', '100', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:remove',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1005', '用户导出', '100', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:export',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1006', '用户导入', '100', '6',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:import',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1007', '重置密码', '100', '7',  '', '', '', 1, 0, 'F', '0', '0', 'system:user:resetPwd',       '#', 11, 1, sysdate(), null, null, '');
 -- 角色管理按钮
-insert into sys_menu values('1008', '角色查询', '101', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1009', '角色新增', '101', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1010', '角色修改', '101', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1011', '角色删除', '101', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:remove',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1012', '角色导出', '101', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:export',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1008', '角色查询', '101', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1009', '角色新增', '101', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1010', '角色修改', '101', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1011', '角色删除', '101', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:remove',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1012', '角色导出', '101', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:role:export',         '#', 11, 1, sysdate(), null, null, '');
 -- 菜单管理按钮
-insert into sys_menu values('1013', '菜单查询', '102', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1014', '菜单新增', '102', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1015', '菜单修改', '102', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1016', '菜单删除', '102', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1013', '菜单查询', '102', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1014', '菜单新增', '102', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1015', '菜单修改', '102', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1016', '菜单删除', '102', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 11, 1, sysdate(), null, null, '');
 -- 部门管理按钮
-insert into sys_menu values('1017', '部门查询', '103', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1018', '部门新增', '103', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1019', '部门修改', '103', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1020', '部门删除', '103', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:remove',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1017', '部门查询', '103', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1018', '部门新增', '103', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1019', '部门修改', '103', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1020', '部门删除', '103', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:dept:remove',         '#', 11, 1, sysdate(), null, null, '');
 -- 岗位管理按钮
-insert into sys_menu values('1021', '岗位查询', '104', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1022', '岗位新增', '104', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1023', '岗位修改', '104', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1024', '岗位删除', '104', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:remove',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1025', '岗位导出', '104', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:export',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1021', '岗位查询', '104', '1',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1022', '岗位新增', '104', '2',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1023', '岗位修改', '104', '3',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1024', '岗位删除', '104', '4',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:remove',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1025', '岗位导出', '104', '5',  '', '', '', 1, 0, 'F', '0', '0', 'system:post:export',         '#', 11, 1, sysdate(), null, null, '');
 -- 字典管理按钮
-insert into sys_menu values('1026', '字典查询', '105', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1027', '字典新增', '105', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1028', '字典修改', '105', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1029', '字典删除', '105', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:remove',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1030', '字典导出', '105', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:export',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1026', '字典查询', '105', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1027', '字典新增', '105', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1028', '字典修改', '105', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1029', '字典删除', '105', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:remove',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1030', '字典导出', '105', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:export',         '#', 11, 1, sysdate(), null, null, '');
 -- 参数设置按钮
-insert into sys_menu values('1031', '参数查询', '106', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:query',        '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1032', '参数新增', '106', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:add',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1033', '参数修改', '106', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:edit',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1034', '参数删除', '106', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:remove',       '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1035', '参数导出', '106', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:export',       '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1031', '参数查询', '106', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:query',        '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1032', '参数新增', '106', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:add',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1033', '参数修改', '106', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:edit',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1034', '参数删除', '106', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:remove',       '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1035', '参数导出', '106', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:config:export',       '#', 11, 1, sysdate(), null, null, '');
 -- 通知公告按钮
-insert into sys_menu values('1036', '公告查询', '107', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:query',        '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1037', '公告新增', '107', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1038', '公告修改', '107', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1039', '公告删除', '107', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1036', '公告查询', '107', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:query',        '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1037', '公告新增', '107', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1038', '公告修改', '107', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1039', '公告删除', '107', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 11, 1, sysdate(), null, null, '');
 -- 操作日志按钮
-insert into sys_menu values('1040', '操作查询', '500', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1041', '操作删除', '500', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1042', '日志导出', '500', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:export',     '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1040', '操作查询', '500', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1041', '操作删除', '500', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1042', '日志导出', '500', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:export',     '#', 11, 1, sysdate(), null, null, '');
 -- 登录日志按钮
-insert into sys_menu values('1043', '登录查询', '501', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1044', '登录删除', '501', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1045', '日志导出', '501', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1050', '账户解锁', '501', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:unlock',  '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1043', '登录查询', '501', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1044', '登录删除', '501', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1045', '日志导出', '501', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1050', '账户解锁', '501', '4', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:unlock',  '#', 11, 1, sysdate(), null, null, '');
 -- 在线用户按钮
-insert into sys_menu values('1046', '在线查询', '109', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1047', '批量强退', '109', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1048', '单条强退', '109', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:forceLogout', '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1046', '在线查询', '109', '1', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1047', '批量强退', '109', '2', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1048', '单条强退', '109', '3', '#', '', '', 1, 0, 'F', '0', '0', 'monitor:online:forceLogout', '#', 11, 1, sysdate(), null, null, '');
 -- 代码生成按钮
-insert into sys_menu values('1055', '生成查询', '115', '1', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query',             '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1056', '生成修改', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit',              '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1057', '生成删除', '115', '3', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1058', '导入代码', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import',            '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1059', '预览代码', '115', '4', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview',           '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1060', '生成代码', '115', '5', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code',              '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1055', '生成查询', '115', '1', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query',             '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1056', '生成修改', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit',              '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1057', '生成删除', '115', '3', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1058', '导入代码', '115', '2', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import',            '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1059', '预览代码', '115', '4', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview',           '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1060', '生成代码', '115', '5', '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code',              '#', 11, 1, sysdate(), null, null, '');
 -- oss相关按钮
-insert into sys_menu values('1600', '文件查询', '118', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:query',        '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1601', '文件上传', '118', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:upload',       '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1602', '文件下载', '118', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:download',     '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1603', '文件删除', '118', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:remove',       '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1604', '配置添加', '118', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:add',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1605', '配置编辑', '118', '6', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:edit',         '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1600', '文件查询', '118', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:query',        '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1601', '文件上传', '118', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:upload',       '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1602', '文件下载', '118', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:download',     '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1603', '文件删除', '118', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:remove',       '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1604', '配置添加', '118', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:add',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1605', '配置编辑', '118', '6', '#', '', '', 1, 0, 'F', '0', '0', 'system:oss:edit',         '#', 11, 1, sysdate(), null, null, '');
 -- 租户管理相关按钮
-insert into sys_menu values ('1606', '租户查询', '121', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:query',   '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1607', '租户新增', '121', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:add',     '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1608', '租户修改', '121', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:edit',    '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1609', '租户删除', '121', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:remove',  '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1610', '租户导出', '121', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:export',  '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1606', '租户查询', '121', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:query',   '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1607', '租户新增', '121', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:add',     '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1608', '租户修改', '121', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:edit',    '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1609', '租户删除', '121', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:remove',  '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1610', '租户导出', '121', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenant:export',  '#', 11, 1, sysdate(), null, null, '');
 -- 租户套餐管理相关按钮
-insert into sys_menu values ('1611', '租户套餐查询', '122', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:query',   '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1612', '租户套餐新增', '122', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:add',     '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1613', '租户套餐修改', '122', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:edit',    '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1614', '租户套餐删除', '122', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:remove',  '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values ('1615', '租户套餐导出', '122', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:export',  '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1611', '租户套餐查询', '122', '1', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:query',   '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1612', '租户套餐新增', '122', '2', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:add',     '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1613', '租户套餐修改', '122', '3', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:edit',    '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1614', '租户套餐删除', '122', '4', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:remove',  '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values ('1615', '租户套餐导出', '122', '5', '#', '', '', 1, 0, 'F', '0', '0', 'system:tenantPackage:export',  '#', 11, 1, sysdate(), null, null, '');
 -- 客户端管理按钮
-insert into sys_menu values('1061', '客户端管理查询', '123', '1',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:query',        '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1062', '客户端管理新增', '123', '2',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:add',          '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1063', '客户端管理修改', '123', '3',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:edit',         '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1064', '客户端管理删除', '123', '4',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:remove',       '#', 103, 1, sysdate(), null, null, '');
-insert into sys_menu values('1065', '客户端管理导出', '123', '5',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:export',       '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values('1061', '客户端管理查询', '123', '1',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:query',        '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1062', '客户端管理新增', '123', '2',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:add',          '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1063', '客户端管理修改', '123', '3',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:edit',         '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1064', '客户端管理删除', '123', '4',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:remove',       '#', 11, 1, sysdate(), null, null, '');
+insert into sys_menu values('1065', '客户端管理导出', '123', '5',  '#', '', '', 1, 0, 'F', '0', '0', 'system:client:export',       '#', 11, 1, sysdate(), null, null, '');
 
 
 -- ----------------------------
@@ -401,8 +631,13 @@ create table sys_user_role (
 -- ----------------------------
 -- 初始化-用户和角色关联表数据
 -- ----------------------------
-insert into sys_user_role values ('1', '1');
-insert into sys_user_role values ('2', '2');
+INSERT INTO `sys_user_role` VALUES (1, 1);
+INSERT INTO `sys_user_role` VALUES (2, 6);
+INSERT INTO `sys_user_role` VALUES (3, 3);
+INSERT INTO `sys_user_role` VALUES (4, 4);
+INSERT INTO `sys_user_role` VALUES (5, 5);
+INSERT INTO `sys_user_role` VALUES (6, 6);
+INSERT INTO `sys_user_role` VALUES (7, 6);
 
 
 -- ----------------------------
@@ -503,6 +738,56 @@ insert into sys_role_menu values ('2', '1063');
 insert into sys_role_menu values ('2', '1064');
 insert into sys_role_menu values ('2', '1065');
 
+insert into sys_role_menu values ('3', '1');
+insert into sys_role_menu values ('3', '4');
+insert into sys_role_menu values ('3', '100');
+insert into sys_role_menu values ('3', '103');
+insert into sys_role_menu values ('3', '1001');
+insert into sys_role_menu values ('3', '1002');
+insert into sys_role_menu values ('3', '1003');
+insert into sys_role_menu values ('3', '1004');
+insert into sys_role_menu values ('3', '1005');
+insert into sys_role_menu values ('3', '1006');
+insert into sys_role_menu values ('3', '1007');
+insert into sys_role_menu values ('3', '1017');
+insert into sys_role_menu values ('3', '1018');
+insert into sys_role_menu values ('3', '1019');
+insert into sys_role_menu values ('3', '1020');
+
+insert into sys_role_menu values ('4', '1');
+insert into sys_role_menu values ('4', '4');
+insert into sys_role_menu values ('4', '100');
+insert into sys_role_menu values ('4', '103');
+insert into sys_role_menu values ('4', '1001');
+insert into sys_role_menu values ('4', '1002');
+insert into sys_role_menu values ('4', '1003');
+insert into sys_role_menu values ('4', '1004');
+insert into sys_role_menu values ('4', '1005');
+insert into sys_role_menu values ('4', '1006');
+insert into sys_role_menu values ('4', '1007');
+insert into sys_role_menu values ('4', '1017');
+insert into sys_role_menu values ('4', '1018');
+insert into sys_role_menu values ('4', '1019');
+insert into sys_role_menu values ('4', '1020');
+
+insert into sys_role_menu values ('5', '1');
+insert into sys_role_menu values ('5', '4');
+insert into sys_role_menu values ('5', '100');
+insert into sys_role_menu values ('5', '103');
+insert into sys_role_menu values ('5', '1001');
+insert into sys_role_menu values ('5', '1002');
+insert into sys_role_menu values ('5', '1003');
+insert into sys_role_menu values ('5', '1004');
+insert into sys_role_menu values ('5', '1005');
+insert into sys_role_menu values ('5', '1006');
+insert into sys_role_menu values ('5', '1007');
+insert into sys_role_menu values ('5', '1017');
+insert into sys_role_menu values ('5', '1018');
+insert into sys_role_menu values ('5', '1019');
+insert into sys_role_menu values ('5', '1020');
+
+insert into sys_role_menu values ('6', '4');
+
 -- ----------------------------
 -- 8、角色和部门关联表  角色1-N部门
 -- ----------------------------
@@ -589,16 +874,18 @@ create table sys_dict_type
   unique (tenant_id, dict_type)
 ) engine=innodb comment = '字典类型表';
 
-insert into sys_dict_type values(1, '000000', '用户性别', 'sys_user_sex',        103, 1, sysdate(), null, null, '用户性别列表');
-insert into sys_dict_type values(2, '000000', '菜单状态', 'sys_show_hide',       103, 1, sysdate(), null, null, '菜单状态列表');
-insert into sys_dict_type values(3, '000000', '系统开关', 'sys_normal_disable',  103, 1, sysdate(), null, null, '系统开关列表');
-insert into sys_dict_type values(6, '000000', '系统是否', 'sys_yes_no',          103, 1, sysdate(), null, null, '系统是否列表');
-insert into sys_dict_type values(7, '000000', '通知类型', 'sys_notice_type',     103, 1, sysdate(), null, null, '通知类型列表');
-insert into sys_dict_type values(8, '000000', '通知状态', 'sys_notice_status',   103, 1, sysdate(), null, null, '通知状态列表');
-insert into sys_dict_type values(9, '000000', '操作类型', 'sys_oper_type',       103, 1, sysdate(), null, null, '操作类型列表');
-insert into sys_dict_type values(10, '000000', '系统状态', 'sys_common_status',   103, 1, sysdate(), null, null, '登录状态列表');
-insert into sys_dict_type values(11, '000000', '授权类型', 'sys_grant_type',     103, 1, sysdate(), null, null, '认证授权类型');
-insert into sys_dict_type values(12, '000000', '设备类型', 'sys_device_type',    103, 1, sysdate(), null, null, '客户端设备类型');
+insert into sys_dict_type values(1, '000000', '用户性别', 'sys_user_sex',        11, 1, sysdate(), null, null, '用户性别列表');
+insert into sys_dict_type values(2, '000000', '菜单状态', 'sys_show_hide',       11, 1, sysdate(), null, null, '菜单状态列表');
+insert into sys_dict_type values(3, '000000', '系统开关', 'sys_normal_disable',  11, 1, sysdate(), null, null, '系统开关列表');
+insert into sys_dict_type values(6, '000000', '系统是否', 'sys_yes_no',          11, 1, sysdate(), null, null, '系统是否列表');
+insert into sys_dict_type values(7, '000000', '通知类型', 'sys_notice_type',     11, 1, sysdate(), null, null, '通知类型列表');
+insert into sys_dict_type values(8, '000000', '通知状态', 'sys_notice_status',   11, 1, sysdate(), null, null, '通知状态列表');
+insert into sys_dict_type values(9, '000000', '操作类型', 'sys_oper_type',       11, 1, sysdate(), null, null, '操作类型列表');
+insert into sys_dict_type values(10, '000000', '系统状态', 'sys_common_status',   11, 1, sysdate(), null, null, '登录状态列表');
+insert into sys_dict_type values(11, '000000', '授权类型', 'sys_grant_type',     11, 1, sysdate(), null, null, '认证授权类型');
+insert into sys_dict_type values(12, '000000', '设备类型', 'sys_device_type',    11, 1, sysdate(), null, null, '客户端设备类型');
+INSERT INTO sys_dict_type values(13, '000000', '部门类型', 'sys_dept_type' ,     11, 1, sysdate(), null, null, '部门类型');
+INSERT INTO sys_dict_type values(14, '000000', '权限类型', 'sys_data_scope' ,     11, 1, sysdate(), null, null, '权限类型');
 
 
 -- ----------------------------
@@ -625,40 +912,49 @@ create table sys_dict_data
   primary key (dict_code)
 ) engine=innodb comment = '字典数据表';
 
-insert into sys_dict_data values(1, '000000', 1,  '男',       '0',       'sys_user_sex',        '',   '',        'Y', 103, 1, sysdate(), null, null, '性别男');
-insert into sys_dict_data values(2, '000000', 2,  '女',       '1',       'sys_user_sex',        '',   '',        'N', 103, 1, sysdate(), null, null, '性别女');
-insert into sys_dict_data values(3, '000000', 3,  '未知',     '2',       'sys_user_sex',        '',   '',        'N', 103, 1, sysdate(), null, null, '性别未知');
-insert into sys_dict_data values(4, '000000', 1,  '显示',     '0',       'sys_show_hide',       '',   'primary', 'Y', 103, 1, sysdate(), null, null, '显示菜单');
-insert into sys_dict_data values(5, '000000', 2,  '隐藏',     '1',       'sys_show_hide',       '',   'danger',  'N', 103, 1, sysdate(), null, null, '隐藏菜单');
-insert into sys_dict_data values(6, '000000', 1,  '正常',     '0',       'sys_normal_disable',  '',   'primary', 'Y', 103, 1, sysdate(), null, null, '正常状态');
-insert into sys_dict_data values(7, '000000', 2,  '停用',     '1',       'sys_normal_disable',  '',   'danger',  'N', 103, 1, sysdate(), null, null, '停用状态');
-insert into sys_dict_data values(12, '000000', 1,  '是',       'Y',       'sys_yes_no',          '',   'primary', 'Y', 103, 1, sysdate(), null, null, '系统默认是');
-insert into sys_dict_data values(13, '000000', 2,  '否',       'N',       'sys_yes_no',          '',   'danger',  'N', 103, 1, sysdate(), null, null, '系统默认否');
-insert into sys_dict_data values(14, '000000', 1,  '通知',     '1',       'sys_notice_type',     '',   'warning', 'Y', 103, 1, sysdate(), null, null, '通知');
-insert into sys_dict_data values(15, '000000', 2,  '公告',     '2',       'sys_notice_type',     '',   'success', 'N', 103, 1, sysdate(), null, null, '公告');
-insert into sys_dict_data values(16, '000000', 1,  '正常',     '0',       'sys_notice_status',   '',   'primary', 'Y', 103, 1, sysdate(), null, null, '正常状态');
-insert into sys_dict_data values(17, '000000', 2,  '关闭',     '1',       'sys_notice_status',   '',   'danger',  'N', 103, 1, sysdate(), null, null, '关闭状态');
-insert into sys_dict_data values(29, '000000', 99, '其他',     '0',       'sys_oper_type',       '',   'info',    'N', 103, 1, sysdate(), null, null, '其他操作');
-insert into sys_dict_data values(18, '000000', 1,  '新增',     '1',       'sys_oper_type',       '',   'info',    'N', 103, 1, sysdate(), null, null, '新增操作');
-insert into sys_dict_data values(19, '000000', 2,  '修改',     '2',       'sys_oper_type',       '',   'info',    'N', 103, 1, sysdate(), null, null, '修改操作');
-insert into sys_dict_data values(20, '000000', 3,  '删除',     '3',       'sys_oper_type',       '',   'danger',  'N', 103, 1, sysdate(), null, null, '删除操作');
-insert into sys_dict_data values(21, '000000', 4,  '授权',     '4',       'sys_oper_type',       '',   'primary', 'N', 103, 1, sysdate(), null, null, '授权操作');
-insert into sys_dict_data values(22, '000000', 5,  '导出',     '5',       'sys_oper_type',       '',   'warning', 'N', 103, 1, sysdate(), null, null, '导出操作');
-insert into sys_dict_data values(23, '000000', 6,  '导入',     '6',       'sys_oper_type',       '',   'warning', 'N', 103, 1, sysdate(), null, null, '导入操作');
-insert into sys_dict_data values(24, '000000', 7,  '强退',     '7',       'sys_oper_type',       '',   'danger',  'N', 103, 1, sysdate(), null, null, '强退操作');
-insert into sys_dict_data values(25, '000000', 8,  '生成代码', '8',       'sys_oper_type',       '',   'warning', 'N', 103, 1, sysdate(), null, null, '生成操作');
-insert into sys_dict_data values(26, '000000', 9,  '清空数据', '9',       'sys_oper_type',       '',   'danger',  'N', 103, 1, sysdate(), null, null, '清空操作');
-insert into sys_dict_data values(27, '000000', 1,  '成功',     '0',       'sys_common_status',   '',   'primary', 'N', 103, 1, sysdate(), null, null, '正常状态');
-insert into sys_dict_data values(28, '000000', 2,  '失败',     '1',       'sys_common_status',   '',   'danger',  'N', 103, 1, sysdate(), null, null, '停用状态');
-insert into sys_dict_data values(30, '000000', 0,  '密码认证', 'password',   'sys_grant_type',   'el-check-tag',   'default', 'N', 103, 1, sysdate(), null, null, '密码认证');
-insert into sys_dict_data values(31, '000000', 0,  '短信认证', 'sms',        'sys_grant_type',   'el-check-tag',   'default', 'N', 103, 1, sysdate(), null, null, '短信认证');
-insert into sys_dict_data values(32, '000000', 0,  '邮件认证', 'email',      'sys_grant_type',   'el-check-tag',   'default', 'N', 103, 1, sysdate(), null, null, '邮件认证');
-insert into sys_dict_data values(33, '000000', 0,  '小程序认证', 'xcx',      'sys_grant_type',   'el-check-tag',   'default', 'N', 103, 1, sysdate(), null, null, '小程序认证');
-insert into sys_dict_data values(34, '000000', 0,  '三方登录认证', 'social', 'sys_grant_type',   'el-check-tag',   'default', 'N', 103, 1, sysdate(), null, null, '三方登录认证');
-insert into sys_dict_data values(35, '000000', 0,  'PC',    'pc',         'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, 'PC');
-insert into sys_dict_data values(36, '000000', 0,  '安卓', 'android',     'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, '安卓');
-insert into sys_dict_data values(37, '000000', 0,  'iOS', 'ios',          'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, 'iOS');
-insert into sys_dict_data values(38, '000000', 0,  '小程序', 'xcx',       'sys_device_type',     '',   'default', 'N', 103, 1, sysdate(), null, null, '小程序');
+insert into sys_dict_data values(1, '000000', 1,  '男',       '0',       'sys_user_sex',        '',   '',        'Y', 11, 1, sysdate(), null, null, '性别男');
+insert into sys_dict_data values(2, '000000', 2,  '女',       '1',       'sys_user_sex',        '',   '',        'N', 11, 1, sysdate(), null, null, '性别女');
+insert into sys_dict_data values(3, '000000', 3,  '未知',     '2',       'sys_user_sex',        '',   '',        'N', 11, 1, sysdate(), null, null, '性别未知');
+insert into sys_dict_data values(4, '000000', 1,  '显示',     '0',       'sys_show_hide',       '',   'primary', 'Y', 11, 1, sysdate(), null, null, '显示菜单');
+insert into sys_dict_data values(5, '000000', 2,  '隐藏',     '1',       'sys_show_hide',       '',   'danger',  'N', 11, 1, sysdate(), null, null, '隐藏菜单');
+insert into sys_dict_data values(6, '000000', 1,  '正常',     '0',       'sys_normal_disable',  '',   'primary', 'Y', 11, 1, sysdate(), null, null, '正常状态');
+insert into sys_dict_data values(7, '000000', 2,  '停用',     '1',       'sys_normal_disable',  '',   'danger',  'N', 11, 1, sysdate(), null, null, '停用状态');
+insert into sys_dict_data values(12, '000000', 1,  '是',       'Y',       'sys_yes_no',          '',   'primary', 'Y', 11, 1, sysdate(), null, null, '系统默认是');
+insert into sys_dict_data values(13, '000000', 2,  '否',       'N',       'sys_yes_no',          '',   'danger',  'N', 11, 1, sysdate(), null, null, '系统默认否');
+insert into sys_dict_data values(14, '000000', 1,  '通知',     '1',       'sys_notice_type',     '',   'warning', 'Y', 11, 1, sysdate(), null, null, '通知');
+insert into sys_dict_data values(15, '000000', 2,  '公告',     '2',       'sys_notice_type',     '',   'success', 'N', 11, 1, sysdate(), null, null, '公告');
+insert into sys_dict_data values(16, '000000', 1,  '正常',     '0',       'sys_notice_status',   '',   'primary', 'Y', 11, 1, sysdate(), null, null, '正常状态');
+insert into sys_dict_data values(17, '000000', 2,  '关闭',     '1',       'sys_notice_status',   '',   'danger',  'N', 11, 1, sysdate(), null, null, '关闭状态');
+insert into sys_dict_data values(29, '000000', 99, '其他',     '0',       'sys_oper_type',       '',   'info',    'N', 11, 1, sysdate(), null, null, '其他操作');
+insert into sys_dict_data values(18, '000000', 1,  '新增',     '1',       'sys_oper_type',       '',   'info',    'N', 11, 1, sysdate(), null, null, '新增操作');
+insert into sys_dict_data values(19, '000000', 2,  '修改',     '2',       'sys_oper_type',       '',   'info',    'N', 11, 1, sysdate(), null, null, '修改操作');
+insert into sys_dict_data values(20, '000000', 3,  '删除',     '3',       'sys_oper_type',       '',   'danger',  'N', 11, 1, sysdate(), null, null, '删除操作');
+insert into sys_dict_data values(21, '000000', 4,  '授权',     '4',       'sys_oper_type',       '',   'primary', 'N', 11, 1, sysdate(), null, null, '授权操作');
+insert into sys_dict_data values(22, '000000', 5,  '导出',     '5',       'sys_oper_type',       '',   'warning', 'N', 11, 1, sysdate(), null, null, '导出操作');
+insert into sys_dict_data values(23, '000000', 6,  '导入',     '6',       'sys_oper_type',       '',   'warning', 'N', 11, 1, sysdate(), null, null, '导入操作');
+insert into sys_dict_data values(24, '000000', 7,  '强退',     '7',       'sys_oper_type',       '',   'danger',  'N', 11, 1, sysdate(), null, null, '强退操作');
+insert into sys_dict_data values(25, '000000', 8,  '生成代码', '8',       'sys_oper_type',       '',   'warning', 'N', 11, 1, sysdate(), null, null, '生成操作');
+insert into sys_dict_data values(26, '000000', 9,  '清空数据', '9',       'sys_oper_type',       '',   'danger',  'N', 11, 1, sysdate(), null, null, '清空操作');
+insert into sys_dict_data values(27, '000000', 1,  '成功',     '0',       'sys_common_status',   '',   'primary', 'N', 11, 1, sysdate(), null, null, '正常状态');
+insert into sys_dict_data values(28, '000000', 2,  '失败',     '1',       'sys_common_status',   '',   'danger',  'N', 11, 1, sysdate(), null, null, '停用状态');
+insert into sys_dict_data values(30, '000000', 0,  '密码认证', 'password',   'sys_grant_type',   'el-check-tag',   'default', 'N', 11, 1, sysdate(), null, null, '密码认证');
+insert into sys_dict_data values(31, '000000', 0,  '短信认证', 'sms',        'sys_grant_type',   'el-check-tag',   'default', 'N', 11, 1, sysdate(), null, null, '短信认证');
+insert into sys_dict_data values(32, '000000', 0,  '邮件认证', 'email',      'sys_grant_type',   'el-check-tag',   'default', 'N', 11, 1, sysdate(), null, null, '邮件认证');
+insert into sys_dict_data values(33, '000000', 0,  '小程序认证', 'xcx',      'sys_grant_type',   'el-check-tag',   'default', 'N', 11, 1, sysdate(), null, null, '小程序认证');
+insert into sys_dict_data values(34, '000000', 0,  '三方登录认证', 'social', 'sys_grant_type',   'el-check-tag',   'default', 'N', 11, 1, sysdate(), null, null, '三方登录认证');
+insert into sys_dict_data values(35, '000000', 0,  'PC',    'pc',         'sys_device_type',     '',   'default', 'N', 11, 1, sysdate(), null, null, 'PC');
+insert into sys_dict_data values(36, '000000', 0,  '安卓', 'android',     'sys_device_type',     '',   'default', 'N', 11, 1, sysdate(), null, null, '安卓');
+insert into sys_dict_data values(37, '000000', 0,  'iOS', 'ios',          'sys_device_type',     '',   'default', 'N', 11, 1, sysdate(), null, null, 'iOS');
+insert into sys_dict_data values(38, '000000', 0,  '小程序', 'xcx',       'sys_device_type',     '',   'default', 'N', 11, 1, sysdate(), null, null, '小程序');
+INSERT INTO sys_dict_data values(39, '000000', 1, '公司', '1', 'sys_dept_type', '', 'default', 'N', 11, 1, sysdate(), null, null, '公司');
+INSERT INTO sys_dict_data values(40, '000000', 2, '部门', '2', 'sys_dept_type', '', 'default', 'N', 11, 1, sysdate(), null, null, '部门');
+INSERT INTO sys_dict_data values(41, '000000', 3, '岗位', '3', 'sys_dept_type', '', 'default', 'N', 11, 1, sysdate(), null, null, '岗位');
+INSERT INTO sys_dict_data values(42, '000000', 1, '全部数据权限', '1', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '全部数据权限');
+INSERT INTO sys_dict_data values(43, '000000', 2, '自定数据权限', '2', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '自定数据权限');
+INSERT INTO sys_dict_data values(44, '000000', 3, '集团部门数据权限', '3', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '集团部门数据权限');
+INSERT INTO sys_dict_data values(45, '000000', 4, '上级公司数据权限', '4', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '上级公司数据权限');
+INSERT INTO sys_dict_data values(46, '000000', 5, '部门经理数据权限', '5', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '部门经理数据权限');
+INSERT INTO sys_dict_data values(47, '000000', 6, '仅本人数据权限', '6', 'sys_data_scope', '', 'default', 'N', 11, 1, sysdate(), null, null, '仅本人数据权限');
 
 -- ----------------------------
 -- 13、参数配置表
@@ -680,11 +976,11 @@ create table sys_config (
   primary key (config_id)
 ) engine=innodb comment = '参数配置表';
 
-insert into sys_config values(1, '000000', '主框架页-默认皮肤样式名称',     'sys.index.skinName',            'skin-blue',     'Y', 103, 1, sysdate(), null, null, '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow' );
-insert into sys_config values(2, '000000', '用户管理-账号初始密码',        'sys.user.initPassword',         '123456',        'Y', 103, 1, sysdate(), null, null, '初始化密码 123456' );
-insert into sys_config values(3, '000000', '主框架页-侧边栏主题',          'sys.index.sideTheme',           'theme-dark',    'Y', 103, 1, sysdate(), null, null, '深色主题theme-dark，浅色主题theme-light' );
-insert into sys_config values(5, '000000', '账号自助-是否开启用户注册功能',  'sys.account.registerUser',      'false',         'Y', 103, 1, sysdate(), null, null, '是否开启注册用户功能（true开启，false关闭）');
-insert into sys_config values(11, '000000', 'OSS预览列表资源开关',         'sys.oss.previewListResource',   'true',          'Y', 103, 1, sysdate(), null, null, 'true:开启, false:关闭');
+insert into sys_config values(1, '000000', '主框架页-默认皮肤样式名称',     'sys.index.skinName',            'skin-blue',     'Y', 11, 1, sysdate(), null, null, '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow' );
+insert into sys_config values(2, '000000', '用户管理-账号初始密码',        'sys.user.initPassword',         '123456',        'Y', 11, 1, sysdate(), null, null, '初始化密码 123456' );
+insert into sys_config values(3, '000000', '主框架页-侧边栏主题',          'sys.index.sideTheme',           'theme-dark',    'Y', 11, 1, sysdate(), null, null, '深色主题theme-dark，浅色主题theme-light' );
+insert into sys_config values(5, '000000', '账号自助-是否开启用户注册功能',  'sys.account.registerUser',      'false',         'Y', 11, 1, sysdate(), null, null, '是否开启注册用户功能（true开启，false关闭）');
+insert into sys_config values(11, '000000', 'OSS预览列表资源开关',         'sys.oss.previewListResource',   'true',          'Y', 11, 1, sysdate(), null, null, 'true:开启, false:关闭');
 
 
 -- ----------------------------
@@ -733,8 +1029,8 @@ create table sys_notice (
 -- ----------------------------
 -- 初始化-公告信息表数据
 -- ----------------------------
-insert into sys_notice values('1', '000000', '温馨提醒：2018-07-01 新版本发布啦', '2', '新版本内容', '0', 103, 1, sysdate(), null, null, '管理员');
-insert into sys_notice values('2', '000000', '维护通知：2018-07-01 系统凌晨维护', '1', '维护内容',   '0', 103, 1, sysdate(), null, null, '管理员');
+insert into sys_notice values('1', '000000', '温馨提醒：2018-07-01 新版本发布啦', '2', '新版本内容', '0', 11, 1, sysdate(), null, null, '管理员');
+insert into sys_notice values('2', '000000', '维护通知：2018-07-01 系统凌晨维护', '1', '维护内容',   '0', 11, 1, sysdate(), null, null, '管理员');
 
 
 -- ----------------------------
@@ -847,11 +1143,11 @@ create table sys_oss_config (
   primary key (oss_config_id)
 ) engine=innodb comment='对象存储配置表';
 
-insert into sys_oss_config values (1, '000000', 'minio',  'ruoyi',            'ruoyi123',        'ruoyi',             '', '127.0.0.1:9000',                '','N', '',             '1' ,'0', '', 103, 1, sysdate(), 1, sysdate(), NULL);
-insert into sys_oss_config values (2, '000000', 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 's3-cn-north-1.qiniucs.com',     '','N', '',             '1' ,'1', '', 103, 1, sysdate(), 1, sysdate(), NULL);
-insert into sys_oss_config values (3, '000000', 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'oss-cn-beijing.aliyuncs.com',   '','N', '',             '1' ,'1', '', 103, 1, sysdate(), 1, sysdate(), NULL);
-insert into sys_oss_config values (4, '000000', 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'cos.ap-beijing.myqcloud.com',   '','N', 'ap-beijing',   '1' ,'1', '', 103, 1, sysdate(), 1, sysdate(), NULL);
-insert into sys_oss_config values (5, '000000', 'image',  'ruoyi',            'ruoyi123',        'ruoyi',             'image', '127.0.0.1:9000',           '','N', '',             '1' ,'1', '', 103, 1, sysdate(), 1, sysdate(), NULL);
+insert into sys_oss_config values (1, '000000', 'minio',  'ruoyi',            'ruoyi123',        'ruoyi',             '', '127.0.0.1:9000',                '','N', '',             '1' ,'0', '', 11, 1, sysdate(), 1, sysdate(), NULL);
+insert into sys_oss_config values (2, '000000', 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 's3-cn-north-1.qiniucs.com',     '','N', '',             '1' ,'1', '', 11, 1, sysdate(), 1, sysdate(), NULL);
+insert into sys_oss_config values (3, '000000', 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'oss-cn-beijing.aliyuncs.com',   '','N', '',             '1' ,'1', '', 11, 1, sysdate(), 1, sysdate(), NULL);
+insert into sys_oss_config values (4, '000000', 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'cos.ap-beijing.myqcloud.com',   '','N', 'ap-beijing',   '1' ,'1', '', 11, 1, sysdate(), 1, sysdate(), NULL);
+insert into sys_oss_config values (5, '000000', 'image',  'ruoyi',            'ruoyi123',        'ruoyi',             'image', '127.0.0.1:9000',           '','N', '',             '1' ,'1', '', 11, 1, sysdate(), 1, sysdate(), NULL);
 
 
 -- ----------------------------
@@ -877,8 +1173,8 @@ create table sys_client (
     primary key (id)
 ) engine=innodb comment='系统授权表';
 
-insert into sys_client values (1, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
-insert into sys_client values (2, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms,social', 'android', 1800, 604800, 0, 0, 103, 1, sysdate(), 1, sysdate());
+insert into sys_client values (1, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', 1800, 604800, 0, 0, 11, 1, sysdate(), 1, sysdate());
+insert into sys_client values (2, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms,social', 'android', 1800, 604800, 0, 0, 11, 1, sysdate(), 1, sysdate());
 
 
 -- for AT mode you must to init this sql for you business database. the seata server not need it.

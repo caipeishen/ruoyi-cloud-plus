@@ -25,4 +25,16 @@ public class SysDataScopeService {
     public String getDeptAndChild(Long deptId) {
         return remoteDataScopeService.getDeptAndChild(deptId);
     }
+
+    public String getDeptManage(Long deptId) {
+        return remoteDataScopeService.getDeptManage(deptId);
+    }
+
+    public String getDeptCompany(Long deptId) {
+        return remoteDataScopeService.getDeptCompany(deptId);
+    }
+
+    public String getDeptGroup(Long deptId) {
+        return remoteDataScopeService.getDeptGroup(deptId);
+    }
 }

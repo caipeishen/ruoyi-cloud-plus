@@ -33,19 +33,25 @@ public enum DataScopeType {
     CUSTOM("2", " #{#deptName} IN ( #{@sdss.getRoleCustom( #user.roleId )} ) ", " 1 = 0 "),
 
     /**
-     * 部门数据权限
+     * 集团部门数据权限
      */
-    DEPT("3", " #{#deptName} = #{#user.deptId} ", " 1 = 0 "),
+    DEPT_GROUP("3", " #{#deptName} IN ( #{@sdss.getDeptGroup( #user.deptId )} )", " 1 = 0 "),
 
     /**
-     * 部门及以下数据权限
+     * 上级公司数据权限(上级如果非公司继续向上找)
      */
-    DEPT_AND_CHILD("4", " #{#deptName} IN ( #{@sdss.getDeptAndChild( #user.deptId )} )", " 1 = 0 "),
+    DEPT_COMPANY("4", " #{#deptName} IN ( #{@sdss.getDeptCompany( #user.deptId )} )", " 1 = 0 "),
+
+    /**
+     * 部门经理数据权限(上级部门以下数据权限)
+     */
+    DEPT_MANAGE("5", " #{#deptName} IN ( #{@sdss.getDeptManage( #user.deptId )} )", " 1 = 0 "),
 
     /**
      * 仅本人数据权限
      */
-    SELF("5", " #{#userName} = #{#user.userId} ", " 1 = 0 ");
+    SELF("6", " #{#userName} = #{#user.userId} ", " 1 = 0 ");
+
 
     private final String code;
 

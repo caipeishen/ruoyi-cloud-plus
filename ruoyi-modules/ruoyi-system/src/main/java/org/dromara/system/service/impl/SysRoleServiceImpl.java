@@ -7,9 +7,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
@@ -20,6 +18,8 @@ import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.query.LambdaQueryWrapperX;
+import org.dromara.common.mybatis.query.QueryWrapperX;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.model.LoginUser;
 import org.dromara.system.domain.SysRole;
@@ -71,14 +71,13 @@ public class SysRoleServiceImpl implements ISysRoleService {
 
     private Wrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {
         Map<String, Object> params = bo.getParams();
-        QueryWrapper<SysRole> wrapper = Wrappers.query();
+        QueryWrapperX<SysRole> wrapper = new QueryWrapperX();
         wrapper.eq("r.del_flag", UserConstants.ROLE_NORMAL)
-            .eq(ObjectUtil.isNotNull(bo.getRoleId()), "r.role_id", bo.getRoleId())
-            .like(StringUtils.isNotBlank(bo.getRoleName()), "r.role_name", bo.getRoleName())
-            .eq(StringUtils.isNotBlank(bo.getStatus()), "r.status", bo.getStatus())
-            .like(StringUtils.isNotBlank(bo.getRoleKey()), "r.role_key", bo.getRoleKey())
-            .between(params.get("beginTime") != null && params.get("endTime") != null,
-                "r.create_time", params.get("beginTime"), params.get("endTime"))
+            .eqIfPresent("r.role_id", bo.getRoleId())
+            .likeIfPresent("r.role_name", bo.getRoleName())
+            .eqIfPresent("r.status", bo.getStatus())
+            .likeIfPresent("r.role_key", bo.getRoleKey())
+            .betweenIfPresent("r.create_time", params.get("beginTime"), params.get("endTime"))
             .orderByAsc("r.role_sort").orderByAsc("r.create_time");;
         return wrapper;
     }
@@ -176,9 +175,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public boolean checkRoleKeyUnique(SysRoleBo role) {
-        boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysRole>()
+        boolean exist = baseMapper.exists(new LambdaQueryWrapperX<SysRole>()
             .eq(SysRole::getRoleKey, role.getRoleKey())
-            .ne(ObjectUtil.isNotNull(role.getRoleId()), SysRole::getRoleId, role.getRoleId()));
+            .neIfPresent(SysRole::getRoleId, role.getRoleId()));
         return !exist;
     }
 
